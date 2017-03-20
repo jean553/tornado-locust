@@ -5,6 +5,7 @@
 UID = Process.euid
 PROJECT_DIR="/vagrant"
 VIRTUAL_ENV_PATH="/tmp/virtual_env35"
+LOCUST_VIRTUAL_ENV_PATH="/tmp/virtual_env27"
 TARGET="dev"
 TORNADO_PORT="8080"
 PROJECT = "tornado-locust"
@@ -18,8 +19,10 @@ Vagrant.configure(VAGRANTFILE_VERSION) do |config|
     "HOST_USER_UID" => UID,
     "TARGET" => TARGET,
     "ENV_NAME" => "devdocker",
+    "LOCUST_ENV_NAME" => "locust",
     "APP_PATH" => PROJECT_DIR,
     "VIRTUAL_ENV_PATH" => VIRTUAL_ENV_PATH,
+    "LOCUST_VIRTUAL_ENV_PATH" => LOCUST_VIRTUAL_ENV_PATH,
     "PROJECT" => PROJECT,
     "TORNADO_PORT" => TORNADO_PORT,
   }
@@ -33,6 +36,9 @@ Vagrant.configure(VAGRANTFILE_VERSION) do |config|
       d.env = environment_variables
     end
     app.ssh.username = "vagrant"
+
+    # forward Locust port for host web browser usage
+    app.vm.network "forwarded_port", guest: 8089, host: 8089
 
     app.vm.provision "ansible", type: "shell" do |ansible|
       ansible.env = environment_variables
